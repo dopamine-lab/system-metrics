@@ -1,0 +1,26 @@
+{
+  "name": "system-metrics",
+  "version": "1.0.0",
+  "description": "System sensors for Linux",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/once.js | column -t"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dope-Code/system-metrics.git"
+  },
+  "keywords": [
+    "sensors",
+    "linux",
+    "stats",
+    "monitoring",
+    "graphite"
+  ],
+  "author": "Nikolay Terziev <n.terziev@dopamine.bg>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dope-Code/system-metrics/issues"
+  },
+  "homepage": "https://github.com/Dope-Code/system-metrics#readme"
+}

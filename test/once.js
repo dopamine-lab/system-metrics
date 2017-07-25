@@ -1,13 +1,15 @@
 "use strict"
 
-const   sensors = require('../index.js'),
-        printTerm = (out) => { 
-            process.stdout.write(
-                out.map((a) => { 
-                    return a.name + ' ' + a.value + ' ' + a.time; }
-                ).join("\n") + "\n"
-            );
-        };
+var Sensor = require('../index.js');
+        Sensor = new Sensor({
+            delta:2000,
+            rootPath:'system'
+        });
 
-sensors.run();
-setTimeout(() => { sensors.run(printTerm); },2000);
+
+Sensor.on(Sensor.events.DATA,(data) => {
+    data.map((row) => {
+         process.stdout.write(row.name + ' ' + row.value + ' ' + row.time  + "\n");
+    });
+});
+Sensor.runForever();

@@ -4,7 +4,7 @@
   "description": "System sensors for Linux",
   "main": "index.js",
   "scripts": {
-    "test": "node test/once.js | column -t"
+    "test": "node test/once.js"
   },
   "repository": {
     "type": "git",

@@ -2,9 +2,9 @@
   "name": "system-metrics",
   "version": "1.0.0",
   "description": "System sensors for Linux",
-  "main": "index.js",
+  "main": "lib/proxy.js",
   "scripts": {
-    "test": "node test/once.js | awk -v date=\"$(echo $3 | date +'%Y-%m-%d %r')\" '{printf \"%-60s %-20s %-20s\\n\", $1, $2, date}'"
+    "test": "node test/once.js | awk '{ printf \"%-60s %-20s %-20s\\n\", $1, $2, $3}'"
   },
   "repository": {
     "type": "git",

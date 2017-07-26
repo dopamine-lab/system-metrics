@@ -1,7 +1,7 @@
 "use strict"
 
-const Sensor = require('../index.js');
-var   sensor = new Sensor({delta:2000,rootPath:'',host:''});
+const Sensor = require(__dirname + '/../lib/proxy.js');
+var   sensor = new Sensor({delta:2000,rootPath:'system'});
 
 sensor.on(sensor.events.DATA,(data) => {
     data.map((row) => {

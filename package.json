@@ -4,7 +4,7 @@
   "description": "System sensors for Linux",
   "main": "index.js",
   "scripts": {
-    "test": "node test/once.js"
+    "test": "node test/once.js | awk -v date=\"$(echo $3 | date +'%Y-%m-%d %r')\" '{printf \"%-60s %-20s %-20s\\n\", $1, $2, date}'"
   },
   "repository": {
     "type": "git",

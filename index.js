@@ -314,7 +314,7 @@ class Sensor extends EventEmitter{
                             .replace(/[^a-z0-9]/gi,' ')
                             .replace(/  +/gi,' ')
                             .trim().split(' ').join('_');
-                    output.push([spath + '.' + lineOut,1,time]);
+                    output.push([this.spath + '.' + lineOut,1,time]);
                 });
                 this.out(output);
             })
@@ -327,6 +327,7 @@ class Sensor extends EventEmitter{
     runDelta(){
         this.nowSec =  parseInt(Date.now() / 1000);
         let output = [];
+        let initialRun = false;
         let majorNumbers = cp.execSync(`lsblk | grep  -Ev 'NAME|rom' | awk '{print $2}' | cut -d: -f 1 | sort -u`)
             .toString()
             .split("\n")
@@ -341,6 +342,7 @@ class Sensor extends EventEmitter{
         };
         
         if(this.CACHE === null ){
+            initialRun = true;
             this.CACHE = sensor;// if no cache ( cleared or first run, assume that current data is a cache data )
         }
         let cores = this.num(cp.execSync('nproc')); // get number of cores
@@ -348,31 +350,35 @@ class Sensor extends EventEmitter{
         let cacheTime = this.CACHE.time;
         let cacheTimeDiff = this.nowSec - cacheTime;
         cacheTimeDiff = cacheTimeDiff === 0 ? 1 : cacheTimeDiff; // prevent division by zero for intervals less than 1 sec.
-        // Total CPU
-        output.push(["cpu.user",     this.cpuCalc(this.CACHE.stats['cpu'][0], sensor.stats['cpu'][0], 0 /* user */       )]);
-        output.push(["cpu.nice",     this.cpuCalc(this.CACHE.stats['cpu'][0], sensor.stats['cpu'][0], 1 /* nice */       )]);
-        output.push(["cpu.system",   this.cpuCalc(this.CACHE.stats['cpu'][0], sensor.stats['cpu'][0], 2 /* system */     )]);
-        output.push(["cpu.idle",     this.cpuCalc(this.CACHE.stats['cpu'][0], sensor.stats['cpu'][0], 3 /* idle */       )]);
-        // each core load
-        for (let i = 0; i < cores; i++){
-            output.push(['cpu' + i + '.user',    this.cpuCalc(this.CACHE.stats['cpu' + i][0], sensor.stats['cpu' + i][0], 0  )]);
-            output.push(['cpu' + i + '.nice',    this.cpuCalc(this.CACHE.stats['cpu' + i][0], sensor.stats['cpu' + i][0], 1  )]);
-            output.push(['cpu' + i + '.system',  this.cpuCalc(this.CACHE.stats['cpu' + i][0], sensor.stats['cpu' + i][0], 2  )]);
-            output.push(['cpu' + i + '.idle',    this.cpuCalc(this.CACHE.stats['cpu' + i][0], sensor.stats['cpu' + i][0], 3  )]);
-        }
-        // Get network speed ( upload / download ) per sec.
-        for (let i in netInterfaces) {
-            let inet = netInterfaces[i]; // interface name
-            output.push(["net." + inet + ".rx",this.netCalc(this.CACHE.net[inet + ':'][0][0] / cacheTimeDiff , sensor.net[inet + ':'][0][0] / cacheTimeDiff )]);
-            output.push(["net." + inet + ".tx",this.netCalc(this.CACHE.net[inet + ':'][0][8] / cacheTimeDiff , sensor.net[inet + ':'][0][8] / cacheTimeDiff )]);
-        }
-        // Disks stats
-        for(let i in majorNumbers){
-            let sensorDriver = sensor.disk[majorNumbers[i]];
-            let cacheDriver = this.CACHE.disk[majorNumbers[i]];
-            for(let j in sensorDriver){
-                output.push(["disk." + sensorDriver[j][1] + '.writespeed',this.format((sensorDriver[j][8] - cacheDriver[j][8]) / 2 / cacheTimeDiff)]);
+        if(initialRun === false)
+        {
+            // Total CPU
+            output.push(["cpu.user",     this.cpuCalc(this.CACHE.stats['cpu'][0], sensor.stats['cpu'][0], 0 /* user */       )]);
+            output.push(["cpu.nice",     this.cpuCalc(this.CACHE.stats['cpu'][0], sensor.stats['cpu'][0], 1 /* nice */       )]);
+            output.push(["cpu.system",   this.cpuCalc(this.CACHE.stats['cpu'][0], sensor.stats['cpu'][0], 2 /* system */     )]);
+            output.push(["cpu.idle",     this.cpuCalc(this.CACHE.stats['cpu'][0], sensor.stats['cpu'][0], 3 /* idle */       )]);
+            // each core load
+            for (let i = 0; i < cores; i++){
+                output.push(['cpu' + i + '.user',    this.cpuCalc(this.CACHE.stats['cpu' + i][0], sensor.stats['cpu' + i][0], 0  )]);
+                output.push(['cpu' + i + '.nice',    this.cpuCalc(this.CACHE.stats['cpu' + i][0], sensor.stats['cpu' + i][0], 1  )]);
+                output.push(['cpu' + i + '.system',  this.cpuCalc(this.CACHE.stats['cpu' + i][0], sensor.stats['cpu' + i][0], 2  )]);
+                output.push(['cpu' + i + '.idle',    this.cpuCalc(this.CACHE.stats['cpu' + i][0], sensor.stats['cpu' + i][0], 3  )]);
             }
+            // Get network speed ( upload / download ) per sec.
+            for (let i in netInterfaces) {
+                let inet = netInterfaces[i]; // interface name
+                output.push(["net." + inet + ".rx",this.netCalc(this.CACHE.net[inet + ':'][0][0] / cacheTimeDiff , sensor.net[inet + ':'][0][0] / cacheTimeDiff )]);
+                output.push(["net." + inet + ".tx",this.netCalc(this.CACHE.net[inet + ':'][0][8] / cacheTimeDiff , sensor.net[inet + ':'][0][8] / cacheTimeDiff )]);
+            }
+            // Disks stats
+            for(let i in majorNumbers){
+                let sensorDriver = sensor.disk[majorNumbers[i]];
+                let cacheDriver = this.CACHE.disk[majorNumbers[i]];
+                for(let j in sensorDriver){
+                    output.push(["disk." + sensorDriver[j][1] + '.writespeed',this.format((sensorDriver[j][8] - cacheDriver[j][8]) / 2 / cacheTimeDiff)]);
+                }
+            }
+
         }
         // ARP changes
         let arpNew = sensor.arp;

@@ -63,48 +63,50 @@ var   sensor = new Sensor();
 sudo npm test
 ```
 ## Metrics.
-- arp.* (*ip as integer)
-- cpu*.clock (*cpu number)
-- cpu*.idle (*cpu number)
-- cpu*.nice (*cpu number)
-- cpu*.system (*cpu number)
-- cpu*.user (*cpu number)
-- cpu.idle 
-- cpu.nice
-- cpu.system
-- cpu.user
-- disk.*.usage.free (*disk name)
-- disk.*.usage.percent (*disk name)
-- disk.*.usage.used (*disk name)
-- disk.*.writespeed (*disk name)
-- disk.*.writespeed (*disk name)
-- mem.free
-- mem.used
-- net.*.rx (*interface)
-- net.*.tx (*interface)
-- net.tcp.close
-- net.tcp.close_wait
-- net.tcp.closing
-- net.tcp.established
-- net.tcp.fin_wait1
-- net.tcp.fin_wait2
-- net.tcp.last_ack
-- net.tcp.listen
-- net.tcp.syn_recv
-- net.tcp.syn_sent
-- net.tcp.time_wait
-- openedfilehandlers
-- ping.gateway
-- prc.*.instances (*process name)
-- procs.blocked
-- procs.running
-- procstotal
-- procszombie
-- random.entropy
-- random.pool
-- service.*.80 (*service name)
-- terminals
-- threads
-- uptime.boot
-- uptime.load
-- users.*.numprocs (*user's name)
+- arp.*: (*ip as integer)
+- cpu*.clock: (*cpu number)
+- cpu*.idle: (*cpu number)
+- cpu*.nice: (*cpu number)
+- cpu*.system: (*cpu number)
+- cpu*.user: (*cpu number)
+- cpu.idle:
+- cpu.nice:
+- cpu.system:
+- cpu.user:
+- disk.*.usage.free: (*disk name)
+- disk.*.usage.percent: (*disk name)
+- disk.*.usage.used: (*disk name)
+- disk.*.writespeed: (*disk name)
+- disk.*.writespeed: (*disk name)
+- mem.free:
+- mem.used:
+- net.*.rx: (*interface)
+- net.*.tx: (*interface)
+- net.tcp.close:
+- net.tcp.close_wait:
+- net.tcp.closing:
+- net.tcp.established:
+- net.tcp.fin_wait1:
+- net.tcp.fin_wait2:
+- net.tcp.last_ack:
+- net.tcp.listen:
+- net.tcp.syn_recv:
+- net.tcp.syn_sent:
+- net.tcp.time_wait:
+- openedfilehandlers:
+- ping.gateway:
+- prc.*.instances: (*process name)
+- procs.blocked:
+- procs.running:
+- procstotal:
+- procszombie:
+- random.entropy:
+- random.pool:
+- service.*.80: (*service name)
+- terminals:
+- threads:
+- uptime.boot:
+- uptime.load:
+- users.*.numprocs: (*user's name)
+- time.sync:
+- watcher:

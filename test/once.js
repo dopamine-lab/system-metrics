@@ -1,15 +1,11 @@
 "use strict"
 
-var Sensor = require('../index.js');
-        Sensor = new Sensor({
-            delta:2000,
-            rootPath:'system'
-        });
+const Sensor = require('../index.js');
+var   sensor = new Sensor({delta:2000,rootPath:'',host:''});
 
-
-Sensor.on(Sensor.events.DATA,(data) => {
+sensor.on(sensor.events.DATA,(data) => {
     data.map((row) => {
          process.stdout.write(row.name + ' ' + row.value + ' ' + row.time  + "\n");
     });
 });
-Sensor.runForever();
+sensor.runForever();

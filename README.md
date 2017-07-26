@@ -63,26 +63,25 @@ var   sensor = new Sensor();
 sudo npm test
 ```
 ## Metrics.
-- arp.*: (*ip as integer)
-- cpu*.clock: (*cpu number)
-- cpu*.idle: (*cpu number)
-- cpu*.nice: (*cpu number)
-- cpu*.system: (*cpu number)
-- cpu*.user: (*cpu number)
-- cpu.idle:
-- cpu.nice:
-- cpu.system:
-- cpu.user:
-- disk.*.usage.free: (*disk name)
-- disk.*.usage.percent: (*disk name)
-- disk.*.usage.used: (*disk name)
-- disk.*.writespeed: (*disk name)
-- disk.*.writespeed: (*disk name)
-- mem.free:
-- mem.used:
-- net.*.rx: (*interface)
-- net.*.tx: (*interface)
-- net.tcp.close:
+- arp.*: (*ip as integer) Sends ipv4 (int) as metric name and mac addr as integer.
+- cpu*.clock: (*cpu number) Current Cpu clock speed.
+- cpu*.idle: (*cpu number) Current Cpu idle.
+- cpu*.nice: (*cpu number) Current Cpu nice.
+- cpu*.system: (*cpu number) Current Cpu system load.
+- cpu*.user: (*cpu number) Current Cpu user load.
+- cpu.idle: Total Cpu idle.
+- cpu.nice: Total Cpu nice.
+- cpu.system: Total Cpu system load.
+- cpu.user: Total cpu user load.
+- disk.*.usage.free: (*disk name) Current disk free space.
+- disk.*.usage.percent: (*disk name) Current disk free space as percents.
+- disk.*.usage.used: (*disk name) Current disk used space.
+- disk.*.writespeed: (*disk name) Current disk writespeed.
+- mem.free: System memory free.
+- mem.used: System memory used.
+- net.*.rx: (*interface) Current interface receive speed.
+- net.*.tx: (*interface) Current interface trasmit speed.
+- net.tcp.close: 
 - net.tcp.close_wait:
 - net.tcp.closing:
 - net.tcp.established:
@@ -93,20 +92,20 @@ sudo npm test
 - net.tcp.syn_recv:
 - net.tcp.syn_sent:
 - net.tcp.time_wait:
-- openedfilehandlers:
-- ping.gateway:
-- prc.*.instances: (*process name)
-- procs.blocked:
-- procs.running:
-- procstotal:
-- procszombie:
-- random.entropy:
-- random.pool:
-- service.*.80: (*service name)
-- terminals:
-- threads:
-- uptime.boot:
-- uptime.load:
-- users.*.numprocs: (*user's name)
-- time.sync:
-- watcher:
+- openedfilehandlers: Opened file handlers by kernel.
+- ping.gateway: Ping to the gateway.
+- prc.*.instances: (*process name) Current process. Number of instances.
+- procs.blocked: Processes blocked on CPU.
+- procs.running: Processes running on CPU.
+- procstotal: Totel processes.
+- procszombie: Number of zombie processes.
+- random.entropy: Available entropy.
+- random.pool: Randomness pool size.
+- service.*.80: (*service name) Current service. Used port.
+- terminals: Number of terminals opened.
+- threads: Number of threads.
+- uptime.boot: Uptime ( since boot ).
+- uptime.load: System load ( returned by uptime command )
+- users.*.numprocs: (*user's name) Number of processes per user.
+- time.sync: Time diff. of current machine, compared to remote server.
+- watcher: System file ( by default: kernel's log ) watcher ( displays changes, a.k.a. new lines ).  

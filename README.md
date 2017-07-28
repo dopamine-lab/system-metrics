@@ -1,17 +1,17 @@
-# system-metrics
+# dope-system-metrics
 Open source sensors for Linux. 
 
 
 ## Open bash terminal:
 
 ```bash
-npm install system-metrics
+npm install dope-system-metrics
 ```
 
 ## Create file sensors.js
 
 ```javascript
-const Sensor = require('system-metrics');
+const Sensor = require('dope-system-metrics');
 var   sensor = new Sensor({ delta:2000, rootPath:'system'});
 sensor.on(sensor.events.DATA,(data) => {
     data.map((row) => {
@@ -28,14 +28,14 @@ sensor.on(sensor.events.DATA,(data) => {
 - runOnce (outputs data that does not represent deviation):
 ```javascript
 
-const Sensor = require('system-metrics');
+const Sensor = require('dope-system-metrics');
 var   sensor = new Sensor();
       sensor.on(sensor.events.DATA,console.log);
       sensor.runOnce();
 ```
 - runOnceDelta (ouputs data end exits on first iteration):
 ```javascript
-const Sensor = require('system-metrics');
+const Sensor = require('dope-system-metrics');
 var   sensor = new Sensor();
       sensor.on(sensor.events.DATA,console.log);
       sensor.runOnceDelta();
@@ -43,7 +43,7 @@ var   sensor = new Sensor();
 
 - runForever (constantly ouputs data):
 ```javascript
-const Sensor = require('system-metrics');
+const Sensor = require('dope-system-metrics');
 var   sensor = new Sensor();
       sensor.on(sensor.events.DATA,console.log);
       sensor.runForever();
@@ -58,7 +58,7 @@ var   sensor = new Sensor();
 - precision: ( precision of metric value. default is 2).
 
 ## Execute as standalone linux app.
-- cd into system-metrics directory and run: 
+- cd into dope-system-metrics directory and run: 
 ```bash
 sudo npm test
 ```

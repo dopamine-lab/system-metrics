@@ -1,6 +1,6 @@
 {
   "name": "dope-system-metrics",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "System sensors for Linux",
   "main": "lib/proxy.js",
   "scripts": {

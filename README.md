@@ -1,4 +1,4 @@
-# dope-system-metrics
+﻿# dope-system-metrics
 Open source sensors for Linux. 
 
 
@@ -57,11 +57,16 @@ var   sensor = new Sensor();
 - timeServerCheckInterval: ( interval to perform the check in seconds. default is 12 hours ).
 - precision: ( precision of metric value. default is 2).
 
-## Execute as standalone linux app.
-- cd into dope-system-metrics directory and run: 
+## Execute:
+- As standalone linux app.
 ```bash
-sudo npm test
+dope-sys-monitor
 ```
+- In graphite comapability mode.
+```bash
+dope-sys-metrics
+```
+
 ## Metrics.
 - arp.*: (*ip as integer) Sends ipv4 (int) as metric name and mac addr as integer.
 - cpu*.clock: (*cpu number) Current Cpu clock speed.
@@ -97,7 +102,7 @@ sudo npm test
 - prc.*.instances: (*process name) Current process. Number of instances.
 - procs.blocked: Processes blocked on CPU.
 - procs.running: Processes running on CPU.
-- procstotal: Totel processes.
+- procstotal: Total processes.
 - procszombie: Number of zombie processes.
 - random.entropy: Available entropy.
 - random.pool: Randomness pool size.

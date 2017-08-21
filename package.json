@@ -6,6 +6,10 @@
   "scripts": {
     "test": "node test/runForever.js | awk '{ printf \"%-60s %-20s %-20s\\n\", $1, $2, $3}'"
   },
+  "bin": {
+    "dope-sys-monitor": "./bin/monitor.js",
+    "dope-sys-metrics": "./bin/metrics.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Dope-Code/system-metrics.git"
@@ -22,5 +26,10 @@
   "bugs": {
     "url": "https://github.com/Dope-Code/system-metrics/issues"
   },
-  "homepage": "https://github.com/Dope-Code/system-metrics#readme"
+  "homepage": "https://github.com/Dope-Code/system-metrics#readme",
+  "directories": {
+    "test": "test",
+    "bin":"bin",
+    "lib":"lib"
+  }
 }

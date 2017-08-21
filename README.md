@@ -62,7 +62,7 @@ var   sensor = new Sensor();
 ```bash
 dope-sys-monitor
 ```
-- In graphite comapability mode.
+- In graphite compatibility mode.
 ```bash
 dope-sys-metrics
 ```

@@ -3,6 +3,7 @@
 "use strict"
 
 const Sensor = require(__dirname + '/../lib/proxy.js');
+const cp = require('child_process');
 var   sensor = new Sensor({delta:2000,rootPath:'',host:''});
 var   highlight = process.argv[2] ? process.argv[2] : '/';
 var   padSize1 = 0;
@@ -11,18 +12,25 @@ var   alerts = {};
 var   Table  = {};
 var   styles = {};
 var   repHorizontal = process.argv[3] || 4;
-
+var   cpus = cp.execSync('nproc');
 // BEGIN SETTINGS
 var   GridCol = 'gray';
 var   alertRows = 5;
 var   maxLen = 35;
 var   emoji = {"rainbow":"🌈","thermometer":"🌡","capricorn":"♑️","radioactive_sign":"☢"};
 var   threshold = {
-    '.ping.gateway':{over:20,below:0},
-    '.disk.sdb2.usage.percent':{over:99,below:0},
-    '.cpu.idle':{over:'z',below:50},
-    '.uptime.load':{over:10,below:0}
+    '.cpu.user':{max:100},
+    '.cpu.system':{max:100},
+    '.uptime.load':{over:100,below:0,max:100},
+    '.mem.used':{max:100}
 };
+for(let i = 0; i<cpus; i++){
+    threshold['.cpu' + i + '.user']   = {max:100};
+    threshold['.cpu' + i + '.system'] = {max:100};
+} // auto setup cpu's scales
+
+threshold['.ping.gateway'] = {over:100};
+
 // END SETTINGS
 
 var   chars = {
@@ -40,7 +48,7 @@ var   codes = {
     inverse:          [7, 27],  blue:     [34, 39],  bgBlue:      [44, 49],
     hidden:           [8, 28],  magenta:  [35, 39],  bgMagenta:   [45, 49],
     strikethrough:    [9, 29],  cyan:     [36, 39],  bgCyan:      [46, 49],
-                                white:    [37, 39],  bgWhite:     [47, 49],
+    blink:            [5, 25],  white:    [37, 39],  bgWhite:     [47, 49],
                                 gray:     [90, 39],
 };
 
@@ -51,9 +59,14 @@ Object.keys(codes).forEach(function (key) {
   style.close = '\u001b[' + val[1] + 'm';
 });
 
-const pad = function (str, len, pad) {
+const padRight = function (str, len, pad) {
   if (len + 1 >= str.length)
   return str + Array(len + 1 - str.length).join(pad);
+};
+
+const padLeft = function (str, len, pad) {
+  if (len + 1 >= str.length)
+  return Array(len + 1 - str.length).join(pad) + str;
 };
 
 const color = function(string,style){
@@ -78,18 +91,36 @@ var printOutput = function(tab){
     let rows = process.stdout.rows;
     for(let i in tab){
         let alert = 'reset';
+
+        // BEGIN scale
+        let metricName = i;
+            metricName = padLeft(truncate(metricName,maxLen),padSize1,' ');
+            if(typeof threshold[i] !== 'undefined' && typeof threshold[i].max !== 'undefined'){
+                let maxScale = threshold[i].max;
+                let scaled = Math.ceil((padSize1 / maxScale) * tab[i]);
+                metricName = metricName.split('');
+                for(let j in metricName){
+                    if(j > scaled) break;
+                    metricName[j] = color(metricName[j],'underline');
+                }
+                metricName = metricName.join('');
+            }
+        // END scale
+        // BEGIN alert
         if(typeof threshold[i] !== 'undefined' && ( tab[i] > threshold[i].over || tab[i]< threshold[i].below) ){
             alert = 'inverse';
             alerts[i] = [tab[i],new Date()];
         }
+        // END alert
+
         let data = color(color(chars['left'],GridCol),'bold')
                     + color(
-                        color(color(pad(truncate(i,maxLen),padSize1,' '),'green'),(i.indexOf(highlight) > -1 ? 'underline' : 'italic'))
+                        color(color(metricName,'green'),(i.indexOf(highlight) > -1 ? 'bold' : 'italic'))
                         ,alert
                       )
                     + color(chars['middle'],GridCol)
                     + color(
-                        color(color(pad(tab[i],padSize2,' '),'red'),(i.indexOf(highlight) > -1 ? 'underline' : 'italic'))
+                        color(color(padRight(tab[i],padSize2,' '),'red'),(i.indexOf(highlight) > -1 ? 'bold' : 'italic'))
                       ,alert)
                     + color(chars['right'],GridCol);
               buffer.push(data);
@@ -108,9 +139,9 @@ var printOutput = function(tab){
          footer += "\n" + color(chars['left'],'gray')
                         + color(emoji['radioactive_sign'],'yellow')
                         + color(" [alert] ",'red')
-                        + color(pad(i,padSize1,' ') + ' ' + pad(alerts[i][0],padSize2,' ') + 'UTC: ' + alerts[i][1].toUTCString(),'white') 
+                        + color(padRight(i,padSize1,' ') + ' ' + padRight(alerts[i][0],padSize2,' ') + 'UTC: ' + alerts[i][1].toUTCString(),'white') 
         }
-//  process.stdout.write('\x1Bc');
+
     process.stdout.write('\u001B[2J\u001B[0;0f');
     console.log(header + final + footer);
 }
@@ -125,6 +156,3 @@ sensor.on(sensor.events.DATA,(data) => {
     printOutput(Table);
 });
 sensor.runForever();
-
-
-

@@ -4,8 +4,15 @@
 
 const Sensor = require(__dirname + '/../lib/proxy.js');
 const cp = require('child_process');
+const defaultHighlight = '(^.cpu([0-9]+\).(user|system|clock))|(^.mem.(free|used))|(.usage.percent)|(.uptime.load)';
 var   sensor = new Sensor({delta:2000,rootPath:'',host:''});
-var   highlight = process.argv[2] ? process.argv[2] : '/';
+
+var   highlight = null;
+try{
+      highlight = new RegExp(process.argv[2] ? process.argv[2] : defaultHighlight);
+}catch(e){
+      highlight = new RegExp(defaultHighlight)
+}
 var   padSize1 = 0;
 var   padSize2 = 0;
 var   alerts = {};
@@ -71,11 +78,19 @@ const padLeft = function (str, len, pad) {
 
 const color = function(string,style){
     return styles[style].open + string + styles[style].close
-}
+};
 
 const truncate = function (str, length, chr){
   chr = chr || '…';
   return str.length >= length ? str.substr(0, length - chr.length) + chr : str;
+};
+
+const intToMac = function(addr){
+    return (parseInt(addr)).toString(16).match(/.{1,2}/g).join(':').toUpperCase();
+};
+
+const intToIP = function (int) {
+    return ((int >> 24) & 255) + "." + ((int >> 16) & 255) + "." + ((int >> 8) & 255) + "." + (int & 255);
 };
 
 var printOutput = function(tab){
@@ -115,12 +130,12 @@ var printOutput = function(tab){
 
         let data = color(color(chars['left'],GridCol),'bold')
                     + color(
-                        color(color(metricName,'green'),(i.indexOf(highlight) > -1 ? 'bold' : 'italic'))
+                        color(color(metricName,'green'),(highlight.test(i) ? 'bold' : 'italic'))
                         ,alert
                       )
                     + color(chars['middle'],GridCol)
                     + color(
-                        color(color(padRight(tab[i],padSize2,' '),'red'),(i.indexOf(highlight) > -1 ? 'bold' : 'italic'))
+                        color(color(padRight(tab[i],padSize2,' '),'red'),(highlight.test(i)  ? 'bold' : 'italic'))
                       ,alert)
                     + color(chars['right'],GridCol);
               buffer.push(data);
@@ -142,12 +157,25 @@ var printOutput = function(tab){
                         + color(padRight(i,padSize1,' ') + ' ' + padRight(alerts[i][0],padSize2,' ') + 'UTC: ' + alerts[i][1].toUTCString(),'white') 
         }
 
-    process.stdout.write('\u001B[2J\u001B[0;0f');
-    console.log(header + final + footer);
+//    process.stdout.write('\u001B[2J\u001B[0;0f');
+    let rend = header + final + footer;
+    process.stdout.write('\x1b[H\x1b[J')
+    process.stdout.write(rend);
+
 }
 
 sensor.on(sensor.events.DATA,(data) => {
     data.map((row) => {
+        if(row.name.indexOf('.arp.') === 0){
+         row.value = intToMac(row.value);
+         row.name = '.arp.'+intToIP(row.name.split('.').pop());
+        }
+        if(/(.cpu)*(.clock)/g.test(row.name)){
+         row.value += ' MHz';
+        }
+        if(/.uptime.boot/g.test(row.name)){
+         row.value += ' sec';
+        }
         if(row.name.length  > padSize1) padSize1 = row.name.length;
         if(row.value.length > padSize2) padSize2 = row.value.length;
         padSize1 = padSize1 < maxLen ? padSize1 : maxLen;
@@ -155,4 +183,5 @@ sensor.on(sensor.events.DATA,(data) => {
     });
     printOutput(Table);
 });
+
 sensor.runForever();

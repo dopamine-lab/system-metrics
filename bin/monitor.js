@@ -24,7 +24,7 @@ var   cpus = cp.execSync('nproc');
 var   GridCol = 'gray';
 var   alertRows = 5;
 var   maxLen = 35;
-var   emoji = {"rainbow":"🌈","thermometer":"🌡","capricorn":"♑️","radioactive_sign":"☢"};
+var   emoji = {"chart":"\uD83D\uDCB9","thermometer":"\uD83C\uDF21","capricorn":"\u2651\uFE0F","radioactive_sign":"\u2622"};
 var   threshold = {
     '.cpu.user':{max:100},
     '.cpu.system':{max:100},
@@ -41,10 +41,10 @@ threshold['.ping.gateway'] = {over:100};
 // END SETTINGS
 
 var   chars = {
-    'top':      '─', 'top-mid':     '┬', 'top-left':    '┌', 'top-right':    '┐',
-    'bottom':   '─', 'bottom-mid':  '┴', 'bottom-left': '└', 'bottom-right': '┘',
-    'left':     '│', 'left-mid':    '├', 'mid':         '─', 'mid-mid':      '┼',
-    'right':    '│', 'right-mid':   '┤', 'middle':      '│'
+    'top':      "\u2500", 'top-mid':     "\u252C", 'top-left':    "\u250C", 'top-right':    "\u2510",
+    'bottom':   "\u2500", 'bottom-mid':  "\u2534", 'bottom-left': "\u2514", 'bottom-right': "\u2581",
+    'left':     "\u2502", 'left-mid':    "\u251C", 'mid':         "\u2500", 'mid-mid':      "\u253C",
+    'right':    "\u2502", 'right-mid':   "\u2524", 'middle':      "\u2502"
       };
 var   codes = {
     reset:            [0, 0 ],
@@ -93,9 +93,20 @@ const intToIP = function (int) {
     return ((int >> 24) & 255) + "." + ((int >> 16) & 255) + "." + ((int >> 8) & 255) + "." + (int & 255);
 };
 
+const toHhMmSs = function (str) {
+    var sec = parseInt(str, 10); // don't forget the second param
+    var hours   = Math.floor(sec / 3600);
+    var minutes = Math.floor((sec - (hours * 3600)) / 60);
+    var seconds = sec - (hours * 3600) - (minutes * 60);
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    if (seconds < 10) {seconds = "0"+seconds;}
+    return hours+':'+minutes+':'+seconds;
+}
+
 var printOutput = function(tab){
 
-    let header  = color(chars['left'],'gray') + ' ' + color(emoji['rainbow'],'yellow') + ' '
+    let header  = color(chars['left'],'gray') + ' ' + color(emoji['chart'],'yellow') + ' '
                 + color( color("D",'white') + color("O",'red') + color('PAMINE','white') , 'bold' )
                 + color(" Live stats:" + new Date().toString() + ":",'white')
                 + color(emoji['thermometer'],'red') + color("Highlight:" + highlight, 'gray');
@@ -174,14 +185,16 @@ sensor.on(sensor.events.DATA,(data) => {
          row.value += ' MHz';
         }
         if(/.uptime.boot/g.test(row.name)){
-         row.value += ' sec';
+         row.value = toHhMmSs(row.value);
         }
+
         if(row.name.length  > padSize1) padSize1 = row.name.length;
         if(row.value.length > padSize2) padSize2 = row.value.length;
         padSize1 = padSize1 < maxLen ? padSize1 : maxLen;
         Table[row.name] = row.value;
     });
     printOutput(Table);
+
 });
 
 sensor.runForever();
